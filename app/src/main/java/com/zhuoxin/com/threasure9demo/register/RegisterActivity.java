@@ -1,5 +1,6 @@
 package com.zhuoxin.com.threasure9demo.register;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -11,15 +12,17 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.zhuoxin.com.threasure9demo.R;
+import com.zhuoxin.com.threasure9demo.User;
 import com.zhuoxin.com.threasure9demo.commons.ActivityUtils;
 import com.zhuoxin.com.threasure9demo.commons.RegexUtils;
 import com.zhuoxin.com.threasure9demo.custom.AlertDialogFragment;
+import com.zhuoxin.com.threasure9demo.map.HomeActivity;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class RegisterActivity extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity implements RegisterView {
 
     @BindView(R.id.toolbar)
     Toolbar toolbar;
@@ -35,12 +38,14 @@ public class RegisterActivity extends AppCompatActivity {
     private String mConfirm;
     private String mPassWord;
     private String mUsername;
+    private ProgressDialog progressDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
         ButterKnife.bind(this);
         activityUtils = new ActivityUtils(this);
+        progressDialog=new ProgressDialog(this);
         //设置toolbal
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null) {
@@ -106,9 +111,29 @@ public class RegisterActivity extends AppCompatActivity {
             AlertDialogFragment.getInstance("密码确认错误","前后输入密码不一致")
                     .show(getSupportFragmentManager(),"password_error");
             return;
-        }
-        // TODO: 2017/7/31
-        activityUtils.showToast("注册成功！");
+       }
+//        // TODO: 2017/7/31
+//        activityUtils.showToast("注册成功！");
+            new RegisterPresenter(this).register(new User(mUsername,mPassWord));
     }
 
+    @Override
+    public void showProgress() {
+        progressDialog=ProgressDialog.show(this, "注册", "正在注册中，请稍候....");
+    }
+
+    @Override
+    public void hideProgress() {
+progressDialog.dismiss();
+    }
+
+    @Override
+    public void showMessage(String message) {
+activityUtils.showToast(message);
+    }
+
+    @Override
+    public void NavigateToHomeActivity() {
+activityUtils.startActivity(HomeActivity.class);
+    }
 }
