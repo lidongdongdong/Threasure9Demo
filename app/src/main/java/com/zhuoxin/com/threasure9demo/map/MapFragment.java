@@ -29,9 +29,11 @@ import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BaiduMapOptions;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.InfoWindow;
 import com.baidu.mapapi.map.MapStatus;
 import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
+import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
 import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.model.LatLng;
@@ -92,7 +94,8 @@ public class MapFragment extends Fragment implements MapFragmentView{
     private LatLng mCurrentStatus;
     private ActivityUtils mActivityUtils;
     private BitmapDescriptor treasure_dot;
-
+private Marker  mCurrentMarker;
+    private BitmapDescriptor treasure_expand;
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -167,7 +170,7 @@ public class MapFragment extends Fragment implements MapFragmentView{
 
     private void initView() {
         treasure_dot = BitmapDescriptorFactory.fromResource(R.mipmap.treasure_dot);
-
+treasure_expand=BitmapDescriptorFactory.fromResource(R.mipmap.treasure_expanded);
         MapStatus mapStatus = new MapStatus.Builder()
                 .overlook(0f)
                 .rotate(0f)
@@ -189,7 +192,28 @@ public class MapFragment extends Fragment implements MapFragmentView{
 
 
         mBaiduMap.setOnMapStatusChangeListener(mOnMapStatusChangeListener);
+    mBaiduMap.setOnMarkerClickListener(mOnMarkerClickListener);
     }
+
+    private BaiduMap.OnMarkerClickListener mOnMarkerClickListener=new BaiduMap.OnMarkerClickListener() {
+        @Override
+        public boolean onMarkerClick(Marker marker) {
+            if (mCurrentMarker!=null){
+                mCurrentMarker.setVisible(true);
+            }
+            mCurrentMarker=marker;
+            mCurrentMarker.setVisible(false);
+            InfoWindow infoWindow=new InfoWindow(treasure_expand, marker.getPosition(), 0, new InfoWindow.OnInfoWindowClickListener() {
+                @Override
+                public void onInfoWindowClick() {
+                    mBaiduMap.hideInfoWindow();
+                    mCurrentMarker.setVisible(true);
+                }
+            });
+            mBaiduMap.showInfoWindow(infoWindow);
+            return false;
+        }
+    };
 
     private BaiduMap.OnMapStatusChangeListener mOnMapStatusChangeListener = new BaiduMap.OnMapStatusChangeListener() {
         @Override
