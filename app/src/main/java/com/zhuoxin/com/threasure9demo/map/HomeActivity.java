@@ -3,6 +3,7 @@ package com.zhuoxin.com.threasure9demo.map;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -84,8 +85,11 @@ private ActivityUtils activityUtils;
             case R.id.menu_logout:
                 UserPrefs.getInstance().clearUser();
                 activityUtils.startActivity(MainActivity.class);
+                finish();
                 break;
+
         }
+        drawerLayout.closeDrawer(GravityCompat.START);
         return false;
     }
 
